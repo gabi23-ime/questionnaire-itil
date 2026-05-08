@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enquête ITIL 5 — SECEL · Krystal Palace</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f2;color:#1a1a1a;min-height:100vh}
+  header{background:#0F6E56;padding:1rem 1.5rem;display:flex;align-items:center;gap:12px}
+  .h-badge{background:rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700}
+  .h-title{color:#fff;font-size:15px;font-weight:600}
+  .h-date{color:rgba(255,255,255,0.7);font-size:12px;margin-top:2px}
+  main{max-width:640px;margin:0 auto;padding:1.5rem 1rem 5rem}
+  .intro{background:#fff;border-radius:12px;border:1px solid #dde8e3;padding:1.25rem;margin-bottom:1.25rem}
+  .intro-title{font-size:17px;font-weight:700;color:#0a2a1f;margin-bottom:6px}
+  .intro-sub{font-size:13px;color:#4a6358;line-height:1.6}
+  .prog-wrap{margin-bottom:1.25rem}
+  .prog-bar{height:5px;background:#c8ddd7;border-radius:3px;overflow:hidden}
+  .prog-fill{height:100%;background:#1D9E75;border-radius:3px;width:0%;transition:width .4s}
+  .prog-txt{font-size:11px;color:#6b7c73;margin-top:4px;text-align:right}
+  .sec{background:#fff;border-radius:12px;border:1px solid #dde8e3;padding:1.25rem;margin-bottom:1rem}
+  .sec-lbl{font-size:11px;font-weight:700;color:#0F6E56;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.1rem}
+  .qb{margin-bottom:1.35rem}.qb:last-child{margin-bottom:0}
+  .qt{font-size:14px;font-weight:600;color:#1a2e26;margin-bottom:9px;line-height:1.5}
+  .qh{font-size:12px;color:#6b7c73;font-weight:400;margin-left:3px}
+  .req{color:#c0392b}
+  .rg{display:flex;flex-direction:column;gap:7px}
+  .ri{display:flex;align-items:flex-start;gap:9px;cursor:pointer;padding:8px 10px;border-radius:8px;border:1px solid #dde8e3;transition:background .1s,border-color .1s}
+  .ri:hover{background:#f0faf6;border-color:#9dd0bc}
+  .ri input{margin-top:2px;accent-color:#1D9E75;flex-shrink:0}
+  .ri span{font-size:14px;color:#2a3e35;line-height:1.4}
+  .stars{display:flex;gap:8px;margin-bottom:4px}
+  .star{font-size:30px;cursor:pointer;color:#c8d6d0;transition:color .1s,transform .1s;user-select:none}
+  .star:hover,.star.on{color:#EF9F27}
+  .star:hover{transform:scale(1.12)}
+  .slbl{font-size:12px;color:#6b7c73;min-height:16px}
+  .sc-wrap{display:flex;flex-direction:column;gap:5px}
+  .sc-row{display:flex;gap:5px;flex-wrap:wrap}
+  .sb{width:38px;height:38px;border-radius:7px;border:1px solid #c8d6d0;background:#f8faf8;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#3a4e45;transition:all .12s}
+  .sb:hover{background:#e0f2ea;border-color:#7ec4a8}
+  .sb.on{background:#1D9E75;border-color:#1D9E75;color:#fff}
+  .sc-lbl{display:flex;justify-content:space-between;font-size:11px;color:#6b7c73}
+  .tr{display:flex;gap:7px;flex-wrap:wrap}
+  .tag{border:1px solid #c0d4cc;border-radius:20px;padding:7px 14px;font-size:13px;cursor:pointer;background:#f8faf8;color:#2a3e35;transition:all .12s;user-select:none}
+  .tag:hover{background:#e0f2ea;border-color:#7ec4a8}
+  .tag.on{background:#1D9E75;border-color:#1D9E75;color:#fff}
+  textarea,input[type=text]{width:100%;border:1px solid #c8d6d0;border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:#1a2e26;background:#f8faf8;transition:border-color .15s}
+  textarea{min-height:75px;resize:vertical}
+  textarea:focus,input[type=text]:focus{outline:none;border-color:#1D9E75;background:#fff}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+  @media(max-width:480px){.grid2{grid-template-columns:1fr}}
+  .sub-zone{text-align:center;padding:1.5rem 0 0}
+  .sub-btn{background:#1D9E75;color:#fff;border:none;border-radius:10px;padding:14px 44px;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s}
+  .sub-btn:hover{background:#0F6E56}
+  .sub-btn:disabled{background:#8ecab6;cursor:not-allowed}
+  .ok{background:#eaf8f0;border:1px solid #5ec99b;border-radius:12px;padding:2rem;text-align:center;margin-top:1.5rem;display:none}
+  .ok-ico{font-size:44px;display:block;margin-bottom:10px}
+  .ok-t{font-size:17px;font-weight:700;color:#0a5e3a;margin-bottom:6px}
+  .ok-s{font-size:13px;color:#2a6e4a}
+  .err{background:#fef0f0;border:1px solid #f59090;border-radius:8px;padding:.75rem 1rem;font-size:13px;color:#8b1a1a;margin-top:.75rem;display:none}
+</style>
+</head>
+<body>
+<header>
+  <span class="h-badge">SECEL · ITIL 5</span>
+  <div><div class="h-title">Enquête de satisfaction & mesure de la demande</div><div class="h-date">📍 Krystal Palace Douala · 27 mai 2025</div></div>
+</header>
+<main>
+  <div class="intro">
+    <div class="intro-title">Merci d'être venu(e) !</div>
+    <div class="intro-sub">Vos réponses nous aident à mieux vous accompagner dans votre transformation IT. Le questionnaire prend environ 5 minutes.</div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-bar"><div class="prog-fill" id="prog"></div></div>
+    <div class="prog-txt" id="prog-txt">0 / 6 sections complétées</div>
+  </div>
+
+  <!-- S1 -->
+  <div class="sec">
+    <div class="sec-lbl">👤 Votre profil</div>
+    <div class="qb">
+      <div class="qt">1. Votre poste actuel <span class="req">*</span></div>
+      <div class="rg">
+        <label class="ri"><input type="radio" name="poste" value="DSI / Directeur IT"><span>DSI / Directeur IT</span></label>
+        <label class="ri"><input type="radio" name="poste" value="Responsable IT / Chef de département"><span>Responsable IT / Chef de département</span></label>
+        <label class="ri"><input type="radio" name="poste" value="Manager / Chef de projet"><span>Manager / Chef de projet</span></label>
+        <label class="ri"><input type="radio" name="poste" value="Technicien / Ingénieur IT"><span>Technicien / Ingénieur IT</span></label>
+        <label class="ri"><input type="radio" name="poste" value="Dirigeant / PDG / DG"><span>Dirigeant / PDG / DG</span></label>
+        <label class="ri"><input type="radio" name="poste" value="Autre"><span>Autre</span></label>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">2. Taille de votre entreprise</div>
+      <div class="rg">
+        <label class="ri"><input type="radio" name="taille" value="Moins de 50 employés"><span>Moins de 50 employés</span></label>
+        <label class="ri"><input type="radio" name="taille" value="50–200 employés"><span>50–200 employés</span></label>
+        <label class="ri"><input type="radio" name="taille" value="200–500 employés"><span>200–500 employés</span></label>
+        <label class="ri"><input type="radio" name="taille" value="Plus de 500 employés"><span>Plus de 500 employés</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div class="sec">
+    <div class="sec-lbl">⭐ Satisfaction globale</div>
+    <div class="qb">
+      <div class="qt">3. Note générale du séminaire <span class="req">*</span></div>
+      <div class="stars" id="stars">
+        <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+        <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span><span class="star" data-v="5">★</span>
+      </div>
+      <div class="slbl" id="slbl">Touchez une étoile pour noter</div>
+      <input type="hidden" id="sv" value="0">
+    </div>
+    <div class="qb">
+      <div class="qt">4. Qualité de la présentation du Guest Speaker (Expert ITIL 5 Master)</div>
+      <div class="sc-wrap">
+        <div class="sc-row" id="sc-speaker">
+          <button class="sb" data-g="speaker" data-v="1">1</button><button class="sb" data-g="speaker" data-v="2">2</button><button class="sb" data-g="speaker" data-v="3">3</button><button class="sb" data-g="speaker" data-v="4">4</button><button class="sb" data-g="speaker" data-v="5">5</button><button class="sb" data-g="speaker" data-v="6">6</button><button class="sb" data-g="speaker" data-v="7">7</button><button class="sb" data-g="speaker" data-v="8">8</button><button class="sb" data-g="speaker" data-v="9">9</button><button class="sb" data-g="speaker" data-v="10">10</button>
+        </div>
+        <div class="sc-lbl"><span>Décevant</span><span>Excellent</span></div>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">5. Organisation & logistique (salle, accueil, timing, menu)</div>
+      <div class="sc-wrap">
+        <div class="sc-row" id="sc-orga">
+          <button class="sb" data-g="orga" data-v="1">1</button><button class="sb" data-g="orga" data-v="2">2</button><button class="sb" data-g="orga" data-v="3">3</button><button class="sb" data-g="orga" data-v="4">4</button><button class="sb" data-g="orga" data-v="5">5</button><button class="sb" data-g="orga" data-v="6">6</button><button class="sb" data-g="orga" data-v="7">7</button><button class="sb" data-g="orga" data-v="8">8</button><button class="sb" data-g="orga" data-v="9">9</button><button class="sb" data-g="orga" data-v="10">10</button>
+        </div>
+        <div class="sc-lbl"><span>À améliorer</span><span>Parfait</span></div>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">6. Le séminaire a-t-il répondu à vos attentes ? <span class="req">*</span></div>
+      <div class="rg">
+        <label class="ri"><input type="radio" name="attentes" value="Oui, au-delà de mes attentes"><span>Oui, au-delà de mes attentes</span></label>
+        <label class="ri"><input type="radio" name="attentes" value="Oui, totalement"><span>Oui, totalement</span></label>
+        <label class="ri"><input type="radio" name="attentes" value="Partiellement"><span>Partiellement</span></label>
+        <label class="ri"><input type="radio" name="attentes" value="Non"><span>Non</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div class="sec">
+    <div class="sec-lbl">📈 Mesure de la demande</div>
+    <div class="qb">
+      <div class="qt">7. Ce séminaire vous a-t-il convaincu de l'utilité d'ITIL 5 ? <span class="req">*</span></div>
+      <div class="rg">
+        <label class="ri"><input type="radio" name="convaincu" value="Oui, je veux agir dès maintenant"><span>Oui, absolument — je veux agir dès maintenant</span></label>
+        <label class="ri"><input type="radio" name="convaincu" value="Oui, j'en discute avec ma direction"><span>Oui — je vais en discuter avec ma direction</span></label>
+        <label class="ri"><input type="radio" name="convaincu" value="Partiellement, besoin de plus d'infos"><span>Partiellement — j'ai besoin de plus d'infos</span></label>
+        <label class="ri"><input type="radio" name="convaincu" value="Pas encore convaincu"><span>Pas encore convaincu</span></label>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">8. Bénéfices ITIL 5 les plus importants pour votre entreprise ? <span class="qh">(plusieurs choix)</span></div>
+      <div class="tr" id="tg-ben">
+        <span class="tag">Réduction des coûts IT</span><span class="tag">Meilleure qualité de service</span><span class="tag">Alignement IT et métiers</span><span class="tag">Gestion des risques</span><span class="tag">Transformation digitale</span><span class="tag">Compétitivité & image</span><span class="tag">Certification de l'équipe</span>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">9. Êtes-vous intéressé(e) par le voyage de certification ITIL 5 ? <span class="req">*</span></div>
+      <div class="rg">
+        <label class="ri"><input type="radio" name="voyage" value="Oui, prêt(e) à m'inscrire"><span>Oui, je suis prêt(e) à m'inscrire</span></label>
+        <label class="ri"><input type="radio" name="voyage" value="Intéressé(e), dois valider le budget"><span>Intéressé(e) — je dois valider le budget</span></label>
+        <label class="ri"><input type="radio" name="voyage" value="Intéressé(e) pour mon équipe"><span>Intéressé(e) pour mon équipe (plusieurs personnes)</span></label>
+        <label class="ri"><input type="radio" name="voyage" value="Peut-être selon les modalités"><span>Peut-être, selon les modalités</span></label>
+        <label class="ri"><input type="radio" name="voyage" value="Pas pour l'instant"><span>Pas pour l'instant</span></label>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">10. Combien de personnes enverriez-vous en certification ?</div>
+      <div class="rg">
+        <label class="ri"><input type="radio" name="nb" value="1 personne"><span>1 (moi seul(e))</span></label>
+        <label class="ri"><input type="radio" name="nb" value="2 à 3 personnes"><span>2 à 3 personnes</span></label>
+        <label class="ri"><input type="radio" name="nb" value="4 à 5 personnes"><span>4 à 5 personnes</span></label>
+        <label class="ri"><input type="radio" name="nb" value="Plus de 5 personnes"><span>Plus de 5 personnes</span></label>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">11. Souhaitez-vous qu'on vous rende visite pour discuter de vos besoins IT ? <span class="req">*</span></div>
+      <div class="rg">
+        <label class="ri"><input type="radio" name="visite" value="Oui, dès que possible"><span>Oui, dès que possible (cette semaine)</span></label>
+        <label class="ri"><input type="radio" name="visite" value="Oui, dans le mois"><span>Oui, dans le mois</span></label>
+        <label class="ri"><input type="radio" name="visite" value="Je préfère un appel d'abord"><span>Je préfère un appel téléphonique d'abord</span></label>
+        <label class="ri"><input type="radio" name="visite" value="Envoyez vos offres par email"><span>Envoyez-moi vos offres par email</span></label>
+        <label class="ri"><input type="radio" name="visite" value="Pas pour l'instant"><span>Pas pour l'instant</span></label>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">12. Comment SECEL peut-il vous accompagner ? <span class="qh">(plusieurs choix)</span></div>
+      <div class="tr" id="tg-acc">
+        <span class="tag">Formation ITIL 5 Foundation</span><span class="tag">Formation ITIL 5 avancée</span><span class="tag">Conseil & audit IT</span><span class="tag">Mise en place d'ITIL</span><span class="tag">Coaching équipes IT</span><span class="tag">Suivi certifications</span><span class="tag">Voyage de certification</span>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">13. Votre niveau de maturité IT actuel ?</div>
+      <div class="rg">
+        <label class="ri"><input type="radio" name="maturite" value="Débutant — pas de processus formalisés"><span>Débutant — pas de processus formalisés</span></label>
+        <label class="ri"><input type="radio" name="maturite" value="En transition — quelques processus en place"><span>En transition — quelques processus en place</span></label>
+        <label class="ri"><input type="radio" name="maturite" value="Avancé — processus existants à optimiser"><span>Avancé — processus existants à optimiser</span></label>
+        <label class="ri"><input type="radio" name="maturite" value="Mature — cherche à certifier / aller plus loin"><span>Mature — cherche à certifier / aller plus loin</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 -->
+  <div class="sec">
+    <div class="sec-lbl">💬 Recommandation & contact</div>
+    <div class="qb">
+      <div class="qt">14. Recommanderiez-vous ce séminaire à un confrère ? <span class="qh">(0 = jamais, 10 = certainement)</span> <span class="req">*</span></div>
+      <div class="sc-wrap">
+        <div class="sc-row" id="sc-nps">
+          <button class="sb" data-g="nps" data-v="0">0</button><button class="sb" data-g="nps" data-v="1">1</button><button class="sb" data-g="nps" data-v="2">2</button><button class="sb" data-g="nps" data-v="3">3</button><button class="sb" data-g="nps" data-v="4">4</button><button class="sb" data-g="nps" data-v="5">5</button><button class="sb" data-g="nps" data-v="6">6</button><button class="sb" data-g="nps" data-v="7">7</button><button class="sb" data-g="nps" data-v="8">8</button><button class="sb" data-g="nps" data-v="9">9</button><button class="sb" data-g="nps" data-v="10">10</button>
+        </div>
+        <div class="sc-lbl"><span>Jamais</span><span>Certainement</span></div>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">15. Un message, suggestion ou point à améliorer ?</div>
+      <textarea id="comm" placeholder="Votre retour nous est précieux…"></textarea>
+    </div>
+    <div class="qb">
+      <div class="qt">16. Vos coordonnées pour être recontacté(e) <span class="qh">(fortement recommandé)</span></div>
+      <div class="grid2">
+        <input type="text" id="f-nom" placeholder="Nom & Prénom">
+        <input type="text" id="f-ent" placeholder="Entreprise">
+      </div>
+      <div class="grid2">
+        <input type="text" id="f-mail" placeholder="Email professionnel">
+        <input type="text" id="f-tel" placeholder="Téléphone / WhatsApp">
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-zone">
+    <button class="sub-btn" id="sub-btn" onclick="submit()">✅ Soumettre ma réponse</button>
+  </div>
+  <div class="err" id="err">Merci de remplir les champs obligatoires (*) avant de soumettre.</div>
+  <div class="ok" id="ok">
+    <span class="ok-ico">🎉</span>
+    <div class="ok-t">Merci pour votre participation !</div>
+    <div class="ok-s">Votre avis a été transmis à l'équipe SECEL. Nous vous contacterons très prochainement.</div>
+  </div>
+</main>
+
+<script>
+// === STARS ===
+const sLabels=['','Très insatisfait','Insatisfait','Neutre','Satisfait','Très satisfait !'];
+document.querySelectorAll('.star').forEach(s=>{
+  s.addEventListener('click',()=>{
+    const v=+s.dataset.v;
+    document.getElementById('sv').value=v;
+    document.getElementById('slbl').textContent=sLabels[v];
+    document.querySelectorAll('.star').forEach(x=>x.classList.toggle('on',+x.dataset.v<=v));
+    prog();
+  });
+});
+
+// === SCALE BUTTONS ===
+document.querySelectorAll('.sb').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll(`.sb[data-g="${b.dataset.g}"]`).forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    prog();
+  });
+});
+
+// === TAGS ===
+document.querySelectorAll('.tag').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+
+// === RADIOS ===
+document.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',prog));
+
+// === PROGRESS ===
+function prog(){
+  const checks=[
+    ()=>document.querySelector('input[name=poste]:checked'),
+    ()=>+document.getElementById('sv').value>0,
+    ()=>document.querySelector('input[name=attentes]:checked'),
+    ()=>document.querySelector('input[name=convaincu]:checked'),
+    ()=>document.querySelector('input[name=voyage]:checked'),
+    ()=>document.querySelector('input[name=visite]:checked')
+  ];
+  const done=checks.filter(c=>c()).length;
+  document.getElementById('prog').style.width=(done/6*100)+'%';
+  document.getElementById('prog-txt').textContent=done+' / 6 sections complétées';
+}
+
+// === SUBMIT ===
+async function submit(){
+  const poste=document.querySelector('input[name=poste]:checked');
+  const stars=+document.getElementById('sv').value;
+  const attentes=document.querySelector('input[name=attentes]:checked');
+  const convaincu=document.querySelector('input[name=convaincu]:checked');
+  const voyage=document.querySelector('input[name=voyage]:checked');
+  const visite=document.querySelector('input[name=visite]:checked');
+  const nps=document.querySelector('.sb[data-g=nps].on');
+
+  document.getElementById('err').style.display='none';
+  if(!poste||stars===0||!attentes||!convaincu||!voyage||!visite){
+    document.getElementById('err').style.display='block';
+    document.getElementById('err').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+
+  const btn=document.getElementById('sub-btn');
+  btn.disabled=true; btn.textContent='Envoi en cours…';
+
+  const benefices=[...document.querySelectorAll('#tg-ben .tag.on')].map(t=>t.textContent).join(' | ');
+  const accomp=[...document.querySelectorAll('#tg-acc .tag.on')].map(t=>t.textContent).join(' | ');
+  const speaker=document.querySelector('.sb[data-g=speaker].on');
+  const orga=document.querySelector('.sb[data-g=orga].on');
+  const nb=document.querySelector('input[name=nb]:checked');
+  const maturite=document.querySelector('input[name=maturite]:checked');
+
+  // ================================================================
+  // REMPLACE par l'URL de ton déploiement Google Apps Script
+  // Exemple: https://script.google.com/macros/s/AKfycb.../exec
+  // ================================================================
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzn52lGbD7tl-CEMraTZReft2xXtoV81RXKkwfsU4BJzzKPIxPHphp-SbnoZtgAeW2i/exec';
+
+  const payload = {
+    '01_Nom': document.getElementById('f-nom').value||'—',
+    '02_Entreprise': document.getElementById('f-ent').value||'—',
+    '03_Email': document.getElementById('f-mail').value||'—',
+    '04_Tel': document.getElementById('f-tel').value||'—',
+    '05_Poste': poste.value,
+    '06_Taille': (document.querySelector('input[name=taille]:checked')||{value:'—'}).value,
+    '07_Note_globale': stars+'/5',
+    '08_Speaker': speaker?speaker.dataset.v+'/10':'—',
+    '09_Orga': orga?orga.dataset.v+'/10':'—',
+    '10_Attentes': attentes.value,
+    '11_Convaincu': convaincu.value,
+    '12_Benefices': benefices||'—',
+    '13_Voyage': voyage.value,
+    '14_Nb_voyage': nb?nb.value:'—',
+    '15_Visite': visite.value,
+    '16_Accompagnement': accomp||'—',
+    '17_Maturite': maturite?maturite.value:'—',
+    '18_NPS': nps?nps.dataset.v+'/10':'—',
+    '19_Commentaire': document.getElementById('comm').value||'—',
+    '_subject': 'Enquête ITIL5 SECEL — '+( document.getElementById('f-nom').value||'Participant'),
+  };
+
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(payload),mode:'no-cors'});
+    // no-cors : la requête part bien mais on ne peut pas lire la réponse → on affiche succès directement
+    if(true){
+      document.getElementById('ok').style.display='block';
+      document.querySelector('.sub-zone').style.display='none';
+      document.getElementById('prog').style.width='100%';
+      document.getElementById('prog-txt').textContent='✅ Réponse envoyée !';
+      document.getElementById('ok').scrollIntoView({behavior:'smooth'});
+    } else {
+      throw new Error('Erreur serveur');
+    }
+  } catch(e){
+    btn.disabled=false; btn.textContent='✅ Soumettre ma réponse';
+    alert('Erreur d\'envoi. Vérifiez votre connexion internet et réessayez.');
+  }
+}
+</script>
+</body>
+</html>
