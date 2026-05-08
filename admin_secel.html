@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin SECEL — ITIL 5</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f2;color:#1a1a1a;min-height:100vh}
+
+  /* === PIN SCREEN === */
+  #pin-screen{position:fixed;inset:0;background:#0F6E56;display:flex;align-items:center;justify-content:center;z-index:1000}
+  .pin-card{background:#fff;border-radius:16px;padding:2.5rem 2rem;text-align:center;max-width:340px;width:90%}
+  .pin-logo{font-size:40px;margin-bottom:1rem}
+  .pin-title{font-size:18px;font-weight:700;color:#0a2a1f;margin-bottom:6px}
+  .pin-sub{font-size:13px;color:#4a6358;margin-bottom:1.5rem}
+  .pin-input{width:100%;border:2px solid #c8d6d0;border-radius:10px;padding:14px;font-size:24px;text-align:center;letter-spacing:.4em;font-weight:700;color:#0a2a1f;margin-bottom:1rem;transition:border-color .2s}
+  .pin-input:focus{outline:none;border-color:#1D9E75}
+  .pin-btn{width:100%;background:#1D9E75;color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s}
+  .pin-btn:hover{background:#0F6E56}
+  .pin-err{font-size:13px;color:#c0392b;margin-top:.5rem;min-height:18px}
+
+  /* === MAIN UI === */
+  #app{display:none}
+  nav{background:#0F6E56;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:10}
+  .nav-l{color:#fff;font-size:15px;font-weight:700}
+  .nav-l span{opacity:.65;font-weight:400;font-size:13px;margin-left:8px}
+  .nav-tabs{display:flex;gap:4px}
+  .nav-tab{color:rgba(255,255,255,.7);background:transparent;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s}
+  .nav-tab:hover{background:rgba(255,255,255,.12);color:#fff}
+  .nav-tab.on{background:rgba(255,255,255,.22);color:#fff}
+  .btn-out{color:rgba(255,255,255,.7);background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer}
+
+  .page{display:none;max-width:920px;margin:0 auto;padding:1.5rem 1rem 4rem}
+  .page.on{display:block}
+
+  /* === QR PAGE === */
+  .qr-card{background:#fff;border-radius:12px;border:1px solid #dde8e3;padding:1.5rem;margin-bottom:1rem}
+  .qr-title{font-size:16px;font-weight:700;color:#0a2a1f;margin-bottom:.25rem}
+  .qr-sub{font-size:13px;color:#4a6358;margin-bottom:1.25rem;line-height:1.6}
+  .step-badge{display:inline-block;background:#1D9E75;color:#fff;border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px;flex-shrink:0}
+  .step-row{display:flex;align-items:flex-start;gap:0;margin-bottom:.9rem}
+  .step-txt{font-size:14px;color:#2a3e35;line-height:1.5;padding-top:2px}
+  .step-txt a{color:#1D9E75;font-weight:600}
+  .url-input-row{display:flex;gap:8px;align-items:center;margin-bottom:1rem}
+  .url-input{flex:1;border:1px solid #c8d6d0;border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;background:#f8faf8}
+  .url-input:focus{outline:none;border-color:#1D9E75;background:#fff}
+  .gen-btn{background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .gen-btn:hover{background:#0F6E56}
+  #qr-output{text-align:center;padding:1.5rem 0 .5rem;display:none}
+  #qr-canvas{display:inline-block;padding:16px;background:#fff;border:1px solid #dde8e3;border-radius:12px;margin-bottom:1rem}
+  .qr-url-display{font-size:13px;color:#4a6358;word-break:break-all;margin-bottom:1rem}
+  .print-btn{background:#fff;color:#0F6E56;border:1.5px solid #0F6E56;border-radius:8px;padding:9px 20px;font-size:14px;font-weight:700;cursor:pointer}
+  .print-btn:hover{background:#f0faf6}
+  .tip{background:#e8f5ef;border-left:3px solid #1D9E75;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:13px;color:#0a2e1e;margin-bottom:.75rem;line-height:1.6}
+  .warn{background:#fff8e6;border-left:3px solid #EF9F27;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:13px;color:#3a2800;margin-bottom:.75rem;line-height:1.6}
+
+  /* === DASHBOARD PAGE === */
+  .dash-hdr{background:#fff;border-radius:12px;border:1px solid #dde8e3;padding:1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .dash-ttl{font-size:17px;font-weight:700;color:#0a2a1f}
+  .dash-cnt{font-size:13px;color:#6b7c73;margin-top:3px}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+  .btn-exp{background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
+  .btn-exp:hover{background:#0F6E56}
+  .btn-clr{background:#fff;color:#c0392b;border:1px solid #c0392b;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.25rem}
+  .sc{background:#fff;border-radius:10px;border:1px solid #dde8e3;padding:.9rem 1rem}
+  .sc-lbl{font-size:12px;color:#6b7c73;margin-bottom:5px}
+  .sc-val{font-size:26px;font-weight:700}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+  @media(max-width:580px){.two{grid-template-columns:1fr}}
+  .chart-box{background:#fff;border-radius:12px;border:1px solid #dde8e3;padding:1.25rem}
+  .chart-ttl{font-size:14px;font-weight:700;color:#1a2e26;margin-bottom:1rem}
+  .bar-i{margin-bottom:10px}
+  .bar-lbl{font-size:12px;color:#2a3e35;margin-bottom:3px;display:flex;justify-content:space-between}
+  .bar-track{background:#e0f0ea;border-radius:4px;height:22px;overflow:hidden}
+  .bar-fill{height:100%;background:#1D9E75;border-radius:4px;display:flex;align-items:center;padding-left:7px;transition:width .5s}
+  .bar-fill span{font-size:11px;color:#fff;font-weight:700;white-space:nowrap}
+  .table-wrap{background:#fff;border-radius:12px;border:1px solid #dde8e3;padding:1.25rem;overflow-x:auto;margin-bottom:1rem}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+  th{background:#f0faf6;color:#0F6E56;font-weight:700;padding:9px 10px;text-align:left;border-bottom:2px solid #c8e8dc}
+  td{padding:9px 10px;border-bottom:1px solid #eaf0ec;color:#2a3e35;vertical-align:top}
+  tr:hover td{background:#f8fdfa}
+  .hot{background:#e8faf0;color:#0a5e3a;border:1px solid #5ec99b;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap}
+  .warm{background:#fff7e6;color:#7a5200;border:1px solid #f0c040;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap}
+  .cold{background:#f5f5f5;color:#666;border:1px solid #ddd;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap}
+  .empty{text-align:center;padding:2.5rem;color:#6b7c73;font-size:14px}
+  .formspree-tip{background:#e6f0fb;border:1px solid #85b7eb;border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:13px;color:#0c447c;line-height:1.6}
+  .formspree-tip a{color:#0c447c;font-weight:700}
+  .formspree-tip strong{font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- ======= PIN SCREEN ======= -->
+<div id="pin-screen">
+  <div class="pin-card">
+    <div class="pin-logo">🔒</div>
+    <div class="pin-title">Espace administrateur</div>
+    <div class="pin-sub">SECEL · ITIL 5 — Krystal Palace<br>Entrez votre code PIN pour accéder</div>
+    <input class="pin-input" type="password" id="pin" maxlength="4" placeholder="····" oninput="checkPin()" onkeydown="if(event.key==='Enter')checkPin()">
+    <button class="pin-btn" onclick="checkPin()">Accéder →</button>
+    <div class="pin-err" id="pin-err"></div>
+  </div>
+</div>
+
+<!-- ======= MAIN APP ======= -->
+<div id="app">
+  <nav>
+    <div class="nav-l">SECEL Admin <span>ITIL 5 · Krystal Palace</span></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="nav-tabs">
+        <button class="nav-tab on" onclick="showPage('qr-page',this)">📱 QR Code</button>
+        <button class="nav-tab" onclick="showPage('dash-page',this)">📊 Tableau de bord</button>
+      </div>
+      <button class="btn-out" onclick="lock()">🔒 Verrouiller</button>
+    </div>
+  </nav>
+
+  <!-- ======= QR PAGE ======= -->
+  <div class="page on" id="qr-page">
+
+    <div class="formspree-tip">
+      <strong>📧 Comment ça fonctionne :</strong> Chaque participant remplit le formulaire sur son téléphone → la réponse est envoyée automatiquement à ton email via <strong>Formspree</strong> (gratuit). Tu reçois chaque réponse en temps réel dans ta boîte mail.
+    </div>
+
+    <div class="qr-card">
+      <div class="qr-title">Étape 1 — Créer ton compte Formspree (gratuit, 2 minutes)</div>
+      <div class="qr-sub">Formspree reçoit les soumissions du formulaire et te les envoie par email. Aucun serveur à gérer.</div>
+      <div class="step-row"><span class="step-badge">1</span><div class="step-txt">Va sur <a href="https://formspree.io" target="_blank">formspree.io</a> → clique <strong>Get Started Free</strong> → crée un compte avec ton email</div></div>
+      <div class="step-row"><span class="step-badge">2</span><div class="step-txt">Clique <strong>+ New Form</strong> → donne un nom (ex: "ITIL5 SECEL") → valide</div></div>
+      <div class="step-row"><span class="step-badge">3</span><div class="step-txt">Copie ton <strong>Form Endpoint</strong> : il ressemble à <code style="background:#f0faf6;padding:2px 6px;border-radius:4px;font-size:12px">https://formspree.io/f/xyzabcde</code></div></div>
+      <div class="step-row"><span class="step-badge">4</span><div class="step-txt">Ouvre le fichier <strong>formulaire_participants.html</strong> avec un éditeur texte (Bloc-notes), cherche <code style="background:#f0faf6;padding:2px 6px;border-radius:4px;font-size:12px">VOTRE_ID_FORMSPREE</code> et remplace-le par ton endpoint</div></div>
+      <div class="tip">✅ Une fois configuré, chaque soumission t'arrive par email avec toutes les réponses clairement listées.</div>
+    </div>
+
+    <div class="qr-card">
+      <div class="qr-title">Étape 2 — Héberger le formulaire en ligne (gratuit, 3 minutes)</div>
+      <div class="qr-sub">Pour que les participants puissent scanner un QR code avec leur téléphone, le formulaire doit être en ligne.</div>
+      <div class="step-row"><span class="step-badge">1</span><div class="step-txt">Va sur <a href="https://app.netlify.com/drop" target="_blank">app.netlify.com/drop</a></div></div>
+      <div class="step-row"><span class="step-badge">2</span><div class="step-txt">Glisse le fichier <strong>formulaire_participants.html</strong> dans la zone de dépôt</div></div>
+      <div class="step-row"><span class="step-badge">3</span><div class="step-txt">Netlify génère une URL en 30 secondes — exemple : <code style="background:#f0faf6;padding:2px 6px;border-radius:4px;font-size:12px">https://sparkling-cake-abc123.netlify.app</code></div></div>
+      <div class="step-row"><span class="step-badge">4</span><div class="step-txt">Colle cette URL ci-dessous pour générer ton QR code</div></div>
+      <div class="warn">⚠️ Sans cette étape, le QR code ne fonctionnera pas sur les téléphones des participants. Netlify est 100% gratuit.</div>
+    </div>
+
+    <div class="qr-card">
+      <div class="qr-title">Étape 3 — Générer et imprimer ton QR code</div>
+      <div class="qr-sub">Colle l'URL Netlify de ton formulaire ci-dessous.</div>
+      <div class="url-input-row">
+        <input class="url-input" type="text" id="url-input" placeholder="https://sparkling-cake-abc123.netlify.app" oninput="qrReady=false">
+        <button class="gen-btn" onclick="genQR()">Générer ▶</button>
+      </div>
+      <div id="qr-output">
+        <div id="qr-canvas"></div>
+        <div class="qr-url-display" id="qr-url-display"></div>
+        <button class="print-btn" onclick="printQR()">🖨️ Imprimer le QR code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= DASHBOARD PAGE ======= -->
+  <div class="page" id="dash-page">
+    <div class="formspree-tip">
+      <strong>📧 Formspree est ta principale source de données.</strong> Les réponses arrivent dans ta boîte email ET dans le dashboard Formspree (<a href="https://formspree.io" target="_blank">formspree.io</a>). Ce tableau de bord ci-dessous affiche les réponses reçues sur <strong>cet appareil</strong> si tu utilises le formulaire en mode local (sans Netlify).
+    </div>
+
+    <div class="dash-hdr">
+      <div>
+        <div class="dash-ttl">📊 Tableau de bord — Enquête ITIL 5</div>
+        <div class="dash-cnt" id="dash-cnt">Chargement…</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-exp" onclick="exportCSV()">⬇ Exporter CSV</button>
+        <button class="btn-clr" onclick="clearData()">🗑 Effacer</button>
+        <button class="btn-exp" style="background:#378ADD" onclick="location.reload()">↻ Rafraîchir</button>
+      </div>
+    </div>
+
+    <div class="stats-grid" id="stats-grid">
+      <div class="sc"><div class="sc-lbl">Réponses totales</div><div class="sc-val" id="s-tot" style="color:#0F6E56">0</div></div>
+      <div class="sc"><div class="sc-lbl">Intéressés voyage</div><div class="sc-val" id="s-voy" style="color:#0a5e3a">0</div></div>
+      <div class="sc"><div class="sc-lbl">Visites demandées</div><div class="sc-val" id="s-vis" style="color:#1D9E75">0</div></div>
+      <div class="sc"><div class="sc-lbl">Note moyenne ★</div><div class="sc-val" id="s-st">—</div></div>
+      <div class="sc"><div class="sc-lbl">NPS moyen</div><div class="sc-val" id="s-nps">—</div></div>
+      <div class="sc"><div class="sc-lbl">Leads chauds 🔥</div><div class="sc-val" id="s-hot" style="color:#c0392b">0</div></div>
+    </div>
+
+    <div class="two">
+      <div class="chart-box"><div class="chart-ttl">Intérêt voyage de certification</div><div id="ch-voy"></div></div>
+      <div class="chart-box"><div class="chart-ttl">Souhait de visite commerciale</div><div id="ch-vis"></div></div>
+    </div>
+    <div class="chart-box" style="margin-bottom:1rem"><div class="chart-ttl">Conviction après le séminaire</div><div id="ch-conv"></div></div>
+
+    <div class="table-wrap">
+      <div class="chart-ttl" style="margin-bottom:1rem">📋 Liste des répondants</div>
+      <table>
+        <thead><tr><th>#</th><th>Nom</th><th>Entreprise</th><th>Poste</th><th>Voyage</th><th>Visite</th><th>Note ★</th><th>Statut</th><th>Contact</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT TEMPLATE -->
+<div id="print-zone" style="display:none">
+  <style>
+    @media print{
+      body>*:not(#print-zone){display:none!important}
+      #print-zone{display:block!important;font-family:'Segoe UI',sans-serif}
+      .print-card{text-align:center;padding:40px;border:2px solid #0F6E56;border-radius:12px;max-width:400px;margin:0 auto}
+      .print-header{color:#0F6E56;font-size:22px;font-weight:800;margin-bottom:4px}
+      .print-sub{color:#4a6358;font-size:14px;margin-bottom:20px}
+      .print-qr{margin:20px auto}
+      .print-url{font-size:12px;color:#6b7c73;word-break:break-all;margin-top:12px}
+      .print-cta{background:#0F6E56;color:white;padding:8px 20px;border-radius:20px;font-size:14px;font-weight:700;display:inline-block;margin-top:12px}
+      .print-logo{font-size:14px;color:#888;margin-top:20px}
+    }
+  </style>
+  <div class="print-card">
+    <div class="print-header">SECEL · ITIL 5</div>
+    <div class="print-sub">Krystal Palace Douala · 27 mai 2025</div>
+    <div style="font-size:14px;color:#2a3e35;margin-bottom:10px;font-weight:600">📋 Enquête de satisfaction</div>
+    <div id="print-qr" class="print-qr"></div>
+    <div class="print-cta">Scannez pour donner votre avis</div>
+    <div class="print-url" id="print-url-txt"></div>
+    <div class="print-logo">SECEL — Leaders en formation IT · Cameroun</div>
+  </div>
+</div>
+
+<script>
+// === PIN ===
+const PIN='2705'; // PIN = 2705 (date du 27 mai)
+let qrReady=false;
+
+async function checkPin(){
+  const v=document.getElementById('pin').value;
+  if(v===PIN){
+    document.getElementById('pin-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    await renderDash();
+  } else if(v.length===4){
+    document.getElementById('pin-err').textContent='Code incorrect. Réessayez.';
+    document.getElementById('pin').value='';
+    setTimeout(()=>document.getElementById('pin-err').textContent='',2000);
+  }
+}
+function lock(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('pin-screen').style.display='flex';
+  document.getElementById('pin').value='';
+}
+
+// === PAGES ===
+async function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='dash-page') await renderDash();
+}
+
+// === QR CODE ===
+let qrInstance=null;
+function genQR(){
+  const url=document.getElementById('url-input').value.trim();
+  if(!url||!url.startsWith('http')){alert('Entrez une URL valide (commence par https://)');return;}
+  document.getElementById('qr-canvas').innerHTML='';
+  qrInstance=new QRCode(document.getElementById('qr-canvas'),{text:url,width:220,height:220,colorDark:'#0F6E56',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+  document.getElementById('qr-url-display').textContent=url;
+  document.getElementById('qr-output').style.display='block';
+  document.getElementById('print-url-txt').textContent=url;
+  qrReady=true;
+}
+function printQR(){
+  if(!qrReady){alert('Génère d\'abord le QR code.');return;}
+  const url=document.getElementById('url-input').value.trim();
+  const srcDiv=document.getElementById('qr-canvas');
+  const destDiv=document.getElementById('print-qr');
+  destDiv.innerHTML='';
+  const img=srcDiv.querySelector('img');
+  const can=srcDiv.querySelector('canvas');
+  if(img){const i=img.cloneNode();destDiv.appendChild(i);}
+  else if(can){const i=new Image();i.src=can.toDataURL();destDiv.appendChild(i);}
+  window.print();
+}
+
+// === DASHBOARD ===
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzn52lGbD7tl-CEMraTZReft2xXtoV81RXKkwfsU4BJzzKPIxPHphp-SbnoZtgAeW2i/exec'; // même URL que dans index.html
+
+async function getData(){
+  try{
+    const res=await fetch(SCRIPT_URL);
+    const raw=await res.json();
+    return Array.isArray(raw)?raw:[];
+  }catch(e){
+    document.getElementById('dash-cnt').textContent='❌ Impossible de contacter Google Sheets. Vérifiez votre connexion.';
+    return[];
+  }
+}
+
+async function renderDash(){
+  document.getElementById('dash-cnt').textContent='Chargement des réponses…';
+  const data=await getData();
+  document.getElementById('dash-cnt').textContent=data.length+' réponse(s) reçue(s) via Google Sheets';
+  document.getElementById('s-tot').textContent=data.length;
+  const voy=data.filter(r=>r.voyage&&!r.voyage.includes("Pas")&&!r.voyage.includes("Peut")).length;
+  document.getElementById('s-voy').textContent=voy;
+  const vis=data.filter(r=>r.visite&&(r.visite.includes("Oui")||r.visite.includes("appel"))).length;
+  document.getElementById('s-vis').textContent=vis;
+  const st=data.filter(r=>r.stars>0).map(r=>+r.stars);
+  document.getElementById('s-st').textContent=st.length?(st.reduce((a,b)=>a+b,0)/st.length).toFixed(1)+'★':'—';
+  const nps=data.filter(r=>r.nps!==undefined).map(r=>+r.nps);
+  document.getElementById('s-nps').textContent=nps.length?(nps.reduce((a,b)=>a+b,0)/nps.length).toFixed(1)+'/10':'—';
+  const hot=data.filter(r=>r.voyage&&(r.voyage.includes("prêt")||r.voyage.includes("Oui, prêt"))||(r.visite&&r.visite.includes("dès que possible"))).length;
+  document.getElementById('s-hot').textContent=hot;
+  bar('ch-voy',data,'voyage');
+  bar('ch-vis',data,'visite');
+  bar('ch-conv',data,'convaincu');
+  renderTable(data);
+}
+function bar(id,data,field){
+  const el=document.getElementById(id);
+  if(!data.length){el.innerHTML='<div class="empty">Aucune donnée</div>';return;}
+  const counts={};data.forEach(r=>{const v=r[field]||'—';counts[v]=(counts[v]||0)+1;});
+  const tot=data.length||1;
+  el.innerHTML=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([l,c])=>{
+    const p=Math.round(c/tot*100);
+    return`<div class="bar-i"><div class="bar-lbl"><span>${l}</span><span>${c} (${p}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${p}%"><span>${c}</span></div></div></div>`;
+  }).join('');
+}
+function renderTable(data){
+  const tb=document.getElementById('tbody');
+  if(!data.length){tb.innerHTML='<tr><td colspan="9"><div class="empty">📭 Aucune réponse pour l\'instant.<br><small>Les réponses apparaîtront ici dès qu\'un participant soumet le formulaire.</small></div></td></tr>';return;}
+  tb.innerHTML=data.map((r,i)=>{
+    let b='';
+    if(r.voyage&&(r.voyage.includes('prêt')||r.visite&&r.visite.includes('dès que')))b='<span class="hot">🔥 Chaud</span>';
+    else if(r.voyage&&(r.voyage.includes('budget')||r.visite&&r.visite.includes('Oui')))b='<span class="warm">⚡ Tiède</span>';
+    else b='<span class="cold">❄ Froid</span>';
+    return`<tr><td>${i+1}</td><td><strong>${r.nom||'—'}</strong></td><td>${r.ent||'—'}</td><td style="font-size:12px">${r.poste||'—'}</td><td style="font-size:12px">${r.voyage||'—'}</td><td style="font-size:12px">${r.visite||'—'}</td><td>${r.stars>0?'★'.repeat(r.stars):'—'}</td><td>${b}</td><td style="font-size:12px">${r.email||''}<br>${r.tel||''}</td></tr>`;
+  }).join('');
+}
+async function exportCSV(){
+  const data=await getData();
+  if(!data.length){alert('Aucune donnée à exporter.');return;}
+  const keys=Object.keys(data[0]);
+  const csv=[keys.join(';'),...data.map(r=>keys.map(k=>'"'+(r[k]+'').replace(/"/g,'""')+'"').join(';'))].join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='enquete_itil5_secel.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+function clearData(){
+  alert('Les données sont dans Google Sheets. Pour les effacer, supprime les lignes directement dans ta feuille Google.');
+}
+</script>
+</body>
+</html>
